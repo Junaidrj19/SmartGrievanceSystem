@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Smart grievance management{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+
+<div class="landing-page">
+  <section class="landing-hero" id="hero" data-section="hero" aria-labelledby="hero-title">
+    <div class="hero-orb hero-orb-one" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-two" aria-hidden="true"></div>
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="container-xl landing-container">
+      <div class="hero-emblem" data-reveal>{{ icon('shield', 31) }}</div>
+      <p class="landing-overline" data-reveal="2">SMART GRIEVANCE MANAGEMENT SYSTEM</p>
+      <h1 id="hero-title" class="landing-hero-title" data-reveal="3">Your voice.<br><span>Our responsibility.</span></h1>
+      <p class="landing-hero-copy" data-reveal="4">A clear, accountable way to raise concerns, follow progress, and move every grievance toward resolution.</p>
+      <div class="landing-hero-actions" data-reveal="4">
+        <a class="btn btn-hero-primary" href="{{ raise_url }}">{{ icon('plus', 17) }} {{ raise_label }}</a>
+        <a class="btn btn-hero-secondary" href="{{ track_url }}">Track your grievance {{ icon('arrow-up-right', 16) }}</a>
+      </div>
+      <div class="hero-trust-line" data-reveal="4"><span>{{ icon('shield', 14) }} Role-aware access</span><span>{{ icon('clipboard', 14) }} Reference-led tracking</span><span>{{ icon('clock', 14) }} Deadline visibility</span></div>
+    </div>
+    <a class="hero-scroll-cue" href="#problem"><span>Scroll to explore</span><span class="scroll-cue-line"></span></a>
+  </section>
+
+  <section class="landing-section landing-problem" id="problem" data-section="problem" aria-labelledby="problem-title">
+    <div class="container-xl landing-container">
+      <div class="landing-section-heading" data-reveal>
+        <p class="landing-kicker">THE CHALLENGE</p>
+        <h2 id="problem-title">Grievances deserve<br><span>a better path forward.</span></h2>
+        <p>When concerns move through disconnected messages and registers, ownership gets blurry and progress becomes difficult to see.</p>
+      </div>
+      <div class="problem-grid">
+        <article class="problem-card problem-card-featured" data-reveal="1"><div class="landing-card-icon icon-blue">{{ icon('search', 21) }}</div><h3>Limited transparency</h3><p>People are left wondering whether a grievance was received, who owns it, and what happens next.</p><span class="card-index">01</span></article>
+        <article class="problem-card" data-reveal="2"><div class="landing-card-icon icon-amber">{{ icon('clock', 21) }}</div><h3>Delayed processing</h3><p>Manual handoffs make it harder to keep response deadlines visible and consistent.</p><span class="card-index">02</span></article>
+        <article class="problem-card" data-reveal="3"><div class="landing-card-icon icon-violet">{{ icon('user', 21) }}</div><h3>Unclear ownership</h3><p>Without a clear department or staff assignment, responsibility can be difficult to trace.</p><span class="card-index">03</span></article>
+        <article class="problem-card" data-reveal="1"><div class="landing-card-icon icon-teal">{{ icon('layers', 21) }}</div><h3>Scattered history</h3><p>Progress remarks and status decisions deserve one chronological, dependable record.</p><span class="card-index">04</span></article>
+        <article class="problem-card" data-reveal="2"><div class="landing-card-icon icon-rose">{{ icon('alert', 21) }}</div><h3>Weak accountability</h3><p>Overdue unresolved cases need a visible signal and a consistent escalation path.</p><span class="card-index">05</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-solution" id="solution" data-section="solution" aria-labelledby="solution-title">
+    <div class="container-xl landing-container">
+      <div class="solution-panel" data-reveal>
+        <div class="solution-glow" aria-hidden="true"></div>
+        <div class="solution-copy">
+          <p class="landing-kicker">THE RESOLVE APPROACH</p>
+          <h2 id="solution-title">From a submitted concern<br><span>to a visible resolution.</span></h2>
+          <p>Resolve brings the full grievance lifecycle into one calm workspace. Students submit with confidence, staff work within their scope, and administrators can see where attention is needed.</p>
+          <a class="text-link text-link-light" href="#how-it-works">See how it works {{ icon('arrow', 16) }}</a>
+        </div>
+        <div class="solution-pillars">
+          <div><span class="pillar-number">01</span><strong>Centralized intake</strong><small>Every submission starts with the details that matter.</small></div>
+          <div><span class="pillar-number">02</span><strong>Accountable ownership</strong><small>Department and staff assignment stays visible.</small></div>
+          <div><span class="pillar-number">03</span><strong>Deadline signals</strong><small>Overdue unresolved cases can be escalated by policy.</small></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-features" id="features" data-section="features" aria-labelledby="features-title">
+    <div class="container-xl landing-container">
+      <div class="landing-section-heading heading-split" data-reveal>
+        <div><p class="landing-kicker">BUILT FOR CLARITY</p><h2 id="features-title">Everything needed<br><span>to keep cases moving.</span></h2></div>
+        <p>Purposeful tools for students, staff, and administrators—without adding noise to the workflow.</p>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card feature-blue" data-reveal="1"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('shield', 21) }}</div><span>01</span></div><h3>Secure workspaces</h3><p>Role-aware access keeps every student record and staff action within its authorized scope.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-cyan" data-reveal="2"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('clipboard', 21) }}</div><span>02</span></div><h3>Structured filing</h3><p>Capture a title, category, description, and location in a focused submission flow.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-violet" data-reveal="3"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('layers', 21) }}</div><span>03</span></div><h3>Your student dashboard</h3><p>Sign in to track your own cases by reference, with status, deadlines, and a complete history.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-amber" data-reveal="1"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('inbox', 21) }}</div><span>04</span></div><h3>Staff workspace</h3><p>Authorized staff can filter their queue, add remarks, and progress permitted statuses.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-green" data-reveal="2"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('grid', 21) }}</div><span>05</span></div><h3>Operations overview</h3><p>Administrators can filter, assign, review real counts, and inspect the whole queue.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-rose" data-reveal="3"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('check', 21) }}</div><span>06</span></div><h3>History that stays clear</h3><p>Every status change records the actor, timestamp, old status, and remarks.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-indigo" data-reveal="1"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('calendar', 21) }}</div><span>07</span></div><h3>Deadline visibility</h3><p>Each case carries a response deadline and a clear overdue signal when it passes.</p><div class="feature-line"></div></article>
+        <article class="feature-card feature-red" data-reveal="2"><div class="feature-card-top"><div class="landing-card-icon">{{ icon('alert', 21) }}</div><span>08</span></div><h3>Policy-led escalation</h3><p>Admins can invoke an idempotent checker for overdue unresolved grievances.</p><div class="feature-line"></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-how" id="how-it-works" data-section="how-it-works" aria-labelledby="how-title">
+    <div class="container-xl landing-container">
+      <div class="landing-section-heading" data-reveal><p class="landing-kicker">THE WORKFLOW</p><h2 id="how-title">A clear path from<br><span>voice to resolution.</span></h2><p>Seven deliberate steps keep the right people informed and the case history intact.</p></div>
+      <div class="workflow-layout">
+        <div class="workflow-rail" aria-hidden="true"><span></span></div>
+        <ol class="workflow-list">
+          <li data-reveal="1"><span class="workflow-number">01</span><div><h3>Sign in securely</h3><p>Use the appropriate seeded account to enter the workspace for your role.</p></div><span class="workflow-icon">{{ icon('shield', 18) }}</span></li>
+          <li data-reveal="2"><span class="workflow-number">02</span><div><h3>Submit the details</h3><p>Describe the issue with a title, category, description, and optional location.</p></div><span class="workflow-icon">{{ icon('clipboard', 18) }}</span></li>
+          <li data-reveal="3"><span class="workflow-number">03</span><div><h3>Receive your reference</h3><p>Resolve creates a unique grievance reference ID and response deadline.</p></div><span class="workflow-icon">{{ icon('layers', 18) }}</span></li>
+          <li data-reveal="1"><span class="workflow-number">04</span><div><h3>Assign responsibility</h3><p>An administrator routes the case to a department and optional staff member.</p></div><span class="workflow-icon">{{ icon('user', 18) }}</span></li>
+          <li data-reveal="2"><span class="workflow-number">05</span><div><h3>Review and progress</h3><p>Authorized staff update permitted statuses and add meaningful remarks.</p></div><span class="workflow-icon">{{ icon('arrow', 18) }}</span></li>
+          <li data-reveal="3"><span class="workflow-number">06</span><div><h3>Escalate when needed</h3><p>The configured checker records one escalation per eligible level for overdue unresolved cases.</p></div><span class="workflow-icon">{{ icon('alert', 18) }}</span></li>
+          <li data-reveal="1"><span class="workflow-number">07</span><div><h3>Resolve and close</h3><p>Resolution and final closure are recorded as part of the complete case history.</p></div><span class="workflow-icon">{{ icon('check', 18) }}</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-section landing-impact" id="impact" aria-labelledby="impact-title">
+    <div class="container-xl landing-container">
+      <div class="impact-panel" data-reveal>
+        <div class="impact-orb" aria-hidden="true"></div>
+        <div><p class="landing-kicker landing-kicker-light">THE INTENDED IMPACT</p><h2 id="impact-title">Better handling begins<br><span>with better visibility.</span></h2></div>
+        <div class="impact-list"><div>{{ icon('check', 16) }}<span><strong>Transparency</strong><small>People can see where a grievance stands.</small></span></div><div>{{ icon('check', 16) }}<span><strong>Traceability</strong><small>History keeps every workflow decision connected.</small></span></div><div>{{ icon('check', 16) }}<span><strong>Responsibility</strong><small>Assignment makes ownership easier to understand.</small></span></div><div>{{ icon('check', 16) }}<span><strong>Oversight</strong><small>Administrators can act on real queue signals.</small></span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="landing-cta" id="raise" aria-labelledby="cta-title">
+    <div class="cta-grid" aria-hidden="true"></div><div class="cta-orb" aria-hidden="true"></div>
+    <div class="container-xl landing-container cta-content" data-reveal><p class="landing-kicker landing-kicker-light">START WITH ONE CLEAR STEP</p><h2 id="cta-title">Ready to make your<br><span>voice heard?</span></h2><p>Raise a grievance through the secure portal and keep its progress visible from submission onward.</p><a class="btn btn-hero-primary" href="{{ raise_url }}">{{ icon('plus', 17) }} {{ raise_label }}</a></div>
+  </section>
+</div>
+{% endblock %}

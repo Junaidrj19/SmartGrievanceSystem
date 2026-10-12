@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ grievance.reference_id }}{% endblock %}
+{% block content %}
+{% from "components/_status_badge.html" import status_badge with context %}
+{% from "components/_icon.html" import icon %}
+<div class="page-header">
+  <div>
+    <p class="eyebrow">CASE FILE / {{ grievance.category|upper }}</p>
+    <h1 class="page-title">{{ grievance.reference_id }}</h1>
+    <div class="detail-status-line">
+      {{ status_badge(grievance.status) }}
+      {% if grievance.is_overdue() %}<span class="overdue-badge">Overdue</span>{% endif %}
+    </div>
+  </div>
+  <div class="page-actions">
+    {% if current_user.role == 'student' %}
+      <a class="btn btn-outline-secondary" href="{{ url_for('student.dashboard') }}">{{ icon('back', 15) }} Back to my grievances</a>
+    {% elif current_user.role == 'staff' %}
+      <a class="btn btn-outline-secondary" href="{{ url_for('staff.dashboard') }}">{{ icon('back', 15) }} Back to assigned cases</a>
+    {% else %}
+      <a class="btn btn-outline-secondary" href="{{ url_for('admin.dashboard') }}">{{ icon('back', 15) }} Back to operations</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row g-4 detail-layout">
+  <div class="col-lg-8">
+    <section class="surface-card detail-card" data-reveal>
+      <div class="card-heading"><div><div class="section-kicker">THE CASE</div><h2>Case information</h2><p>Key details and current ownership for this grievance.</p></div><span class="detail-card-icon">{{ icon('clipboard', 18) }}</span></div>
+      <div class="card-body-pad">
+        <dl class="row detail-list mb-0">
+          <dt class="col-sm-4">Title</dt><dd class="col-sm-8">{{ grievance.title }}</dd>
+          <dt class="col-sm-4">Category</dt><dd class="col-sm-8">{{ grievance.category }}</dd>
+          <dt class="col-sm-4">Description</dt><dd class="col-sm-8"><div class="description-block text-prewrap">{{ grievance.description }}</div></dd>
+          <dt class="col-sm-4">Location</dt><dd class="col-sm-8{% if not grievance.location %} detail-value-muted{% endif %}">{{ grievance.location or 'Not provided' }}</dd>
+          <dt class="col-sm-4">Submitted</dt><dd class="col-sm-8">{{ format_datetime(grievance.created_at) }}</dd>
+          <dt class="col-sm-4">Last updated</dt><dd class="col-sm-8">{{ format_datetime(grievance.updated_at) }}</dd>
+          <dt class="col-sm-4">Response deadline</dt><dd class="col-sm-8">{{ format_datetime(grievance.deadline_at) }}</dd>
+          <dt class="col-sm-4">Department</dt><dd class="col-sm-8{% if not grievance.department %} detail-value-muted{% endif %}">{{ grievance.department.name if grievance.department else 'Not assigned' }}</dd>
+          <dt class="col-sm-4">Assigned staff</dt><dd class="col-sm-8{% if not grievance.assigned_staff %} detail-value-muted{% endif %}">{{ grievance.assigned_staff.name if grievance.assigned_staff else 'Not assigned' }}</dd>
+        </dl>
+      </div>
+    </section>
+
+    <section class="surface-card detail-card" data-reveal="2">
+      <div class="card-heading"><div><div class="section-kicker">AUDIT TRAIL</div><h2>Status history</h2><p>Chronological record of every workflow update.</p></div><span class="detail-card-icon">{{ icon('layers', 18) }}</span></div>
+      <div class="card-body-pad">
+        {% if grievance.history %}
+        <ol class="timeline list-unstyled">
+          {% for entry in grievance.history %}
+          <li>
+            <div class="timeline-dot" aria-hidden="true"></div>
+            <div>
+              <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="timeline-status">{{ status_labels.get(entry.new_status, entry.new_status) }}</span>
+                <time class="timeline-meta">{{ format_datetime(entry.created_at) }}</time>
+              </div>
+              <p class="timeline-meta">{{ entry.actor_user.name if entry.actor_user else 'System checker' }}{% if entry.old_status %} · from {{ status_labels.get(entry.old_status, entry.old_status) }}{% endif %}</p>
+              {% if entry.remarks %}<p class="timeline-remarks text-prewrap">{{ entry.remarks }}</p>{% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+        {% else %}<p class="text-muted mb-0">No history has been recorded.</p>{% endif %}
+      </div>
+    </section>
+  </div>
+
+  <div class="col-lg-4">
+    {% if admin_view is defined %}
+    <section class="surface-card detail-card" data-reveal="2">
+      <div class="card-heading"><div><div class="section-kicker">OWNERSHIP</div><h2>Assignment</h2><p>Set the department and responsible staff member.</p></div><span class="detail-card-icon">{{ icon('user', 18) }}</span></div>
+      <div class="card-body-pad">
+        <form method="post" action="{{ url_for('admin.assign', grievance_id=grievance.id) }}" data-loading-form>
+          {{ assignment_form.hidden_tag() }}
+          <div class="mb-3">{{ assignment_form.department_id.label(class="form-label") }}{{ assignment_form.department_id(class="form-select") }}{% for error in assignment_form.department_id.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>
+          <div class="mb-3">{{ assignment_form.assigned_staff_id.label(class="form-label") }}{{ assignment_form.assigned_staff_id(class="form-select") }}{% for error in assignment_form.assigned_staff_id.errors %}<div class="field-error">{{ error }}</div>{% endfor %}</div>
+          <div class="mb-3">{{ assignment_form.remarks.label(class="form-label") }}{{ assignment_form.remarks(class="form-control", placeholder="Optional context for the assignment") }}</div>
+          {{ assignment_form.submit(class="btn btn-primary w-100") }}
+        </form>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if staff_view is defined or admin_view is defined %}
+    <section class="surface-card detail-card" data-reveal="3">
+      <div class="card-heading"><div><div class="section-kicker">WORKFLOW ACTION</div><h2>Update status</h2><p>Add a permitted workflow update and progress note.</p></div><span class="detail-card-icon">{{ icon('arrow', 18) }}</span></div>
+      <div class="card-body-pad">
+        {% if status_form.status.choices %}
+        <form method="post" action="{{ url_for('admin.update_grievance_status' if admin_view is defined else 'staff.update_grievance_status', grievance_id=grievance.id) }}" data-loading-form>
+          {{ status_form.hidden_tag() }}
+          <div class="mb-3">{{ status_form.status.label(class="form-label") }}{{ status_form.status(class="form-select") }}</div>
+          <div class="mb-3">{{ status_form.remarks.label(class="form-label") }}{{ status_form.remarks(class="form-control", placeholder="Optional progress remarks") }}</div>
+          {{ status_form.submit(class="btn btn-primary w-100") }}
+        </form>
+        {% else %}<p class="text-muted mb-0">No further status transition is available for this case.</p>{% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="surface-card detail-card" data-reveal="4">
+      <div class="card-heading"><div><div class="section-kicker">DEADLINE SIGNALS</div><h2>Escalation events</h2><p>Recorded deadline-based escalation activity.</p></div><span class="detail-card-icon">{{ icon('alert', 18) }}</span></div>
+      <div class="card-body-pad">
+        {% if grievance.escalations %}
+        <ul class="stacked-list">
+          {% for event in grievance.escalations %}
+          <li>
+            <div class="event-heading"><strong>Level {{ event.level }}</strong><span class="event-destination">{{ event.action_status.title() }}</span></div>
+            <div class="event-destination">{{ format_datetime(event.created_at) }} · {{ event.destination_authority }}</div>
+            <p class="event-reason">{{ event.reason }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}<p class="text-muted mb-0">No escalation events recorded.</p>{% endif %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

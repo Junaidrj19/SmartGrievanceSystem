@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b1425">
+    <meta name="description" content="Resolve — smart grievance management for clear, accountable case resolution.">
+    <title>{% block title %}Resolve{% endblock %} · Resolve</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+  </head>
+  <body class="portal-body {% if landing_page is defined and landing_page %}landing-body{% endif %}">
+    {% from "components/_icon.html" import icon %}
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="portal-header {% if landing_page is defined and landing_page %}landing-header{% endif %}">
+      <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Primary navigation">
+        <div class="container-xl">
+          <a class="navbar-brand portal-brand" href="{{ url_for('main.landing') if current_user.is_authenticated else url_for('main.index') }}">
+            <span class="brand-mark" aria-hidden="true">R</span>
+            <span class="brand-lockup"><strong>Resolve</strong><small>Smart grievance management</small></span>
+          </a>
+          {% if landing_page is defined and landing_page %}
+            <button class="navbar-toggler" type="button" data-menu-target="portalNav" aria-controls="portalNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="portalNav">
+              <ul class="navbar-nav mx-auto portal-links landing-links">
+                <li class="nav-item"><a class="nav-link active" data-section-link="hero" href="#hero">Home</a></li>
+                <li class="nav-item"><a class="nav-link" data-section-link="features" href="#features">Features</a></li>
+                <li class="nav-item"><a class="nav-link" data-section-link="how-it-works" href="#how-it-works">How it works</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ track_url }}">Track grievance</a></li>
+              </ul>
+              <div class="landing-nav-actions">
+                {% if current_user.is_authenticated %}
+                  <a class="nav-login" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+                  <span class="landing-user">{{ current_user.name }}<small>{{ role_labels.get(current_user.role, current_user.role) }}</small></span>
+                  <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">{{ logout_form.hidden_tag() }}<button type="submit" class="btn btn-outline-primary">Sign out</button></form>
+                {% else %}
+                  <a class="nav-login" href="{{ url_for('auth.login') }}">Sign in</a>
+                {% endif %}
+                {% if not current_user.is_authenticated or current_user.role == 'student' %}<a class="btn btn-nav-cta" href="{{ raise_url }}">{{ raise_label }}</a>{% endif %}
+              </div>
+            </div>
+          {% elif current_user.is_authenticated %}
+            <button class="navbar-toggler" type="button" data-menu-target="portalNav" aria-controls="portalNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="portalNav">
+              <ul class="navbar-nav me-auto portal-links">
+                {% from "components/_icon.html" import icon %}
+                {% if current_user.role == 'student' %}
+                  <li class="nav-item"><a class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}" href="{{ url_for('student.dashboard') }}">{{ icon('grid', 15) }}<span>My grievances</span></a></li>
+                  <li class="nav-item"><a class="nav-link {% if request.endpoint == 'student.new_grievance' %}active{% endif %}" href="{{ url_for('student.new_grievance') }}">{{ icon('plus', 15) }}<span>New grievance</span></a></li>
+                {% elif current_user.role == 'staff' %}
+                  <li class="nav-item"><a class="nav-link {% if request.endpoint in ['staff.dashboard', 'staff.grievance_detail', 'staff.update_grievance_status'] %}active{% endif %}" href="{{ url_for('staff.dashboard') }}">{{ icon('inbox', 15) }}<span>Assigned cases</span></a></li>
+                {% elif current_user.role == 'admin' %}
+                  <li class="nav-item"><a class="nav-link {% if request.endpoint in ['admin.dashboard', 'admin.grievance_detail', 'admin.assign', 'admin.update_grievance_status'] %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">{{ icon('grid', 15) }}<span>Operations</span></a></li>
+                  <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.escalations' %}active{% endif %}" href="{{ url_for('admin.escalations') }}">{{ icon('alert', 15) }}<span>Escalations</span></a></li>
+                {% endif %}
+              </ul>
+              <div class="portal-account">
+                <div class="account-avatar" aria-hidden="true">{{ current_user.name[:1]|upper }}</div>
+                <div class="account-copy">
+                  <span class="account-name">{{ current_user.name }}</span>
+                  <span class="account-role">{{ role_labels.get(current_user.role, current_user.role) }}</span>
+                </div>
+                <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">
+                  {{ logout_form.hidden_tag() }}
+                  <button class="btn btn-signout" type="submit">{{ icon('logout', 15) }}<span>Sign out</span></button>
+                </form>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content" tabindex="-1" class="{% if landing_page is defined and landing_page %}landing-main{% else %}container-xl portal-main{% endif %}">
+      {% include "components/_flash.html" %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer class="portal-footer {% if landing_page is defined and landing_page %}landing-footer{% else %}container-xl{% endif %}">
+      <div><strong>Resolve</strong> · Smart grievance management{% if landing_page is defined and landing_page %}<p class="footer-description">Structured concerns. Clear ownership. A visible path to resolution.</p><small>© {{ current_year }} Resolve · Local academic demonstration</small>{% endif %}</div>
+      {% if landing_page is defined and landing_page %}
+        <nav class="landing-footer-links" aria-label="Footer navigation"><a href="#hero">Home</a><a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="{{ raise_url }}">{{ raise_label }}</a><a href="{{ track_url }}">Track grievance</a></nav>
+      {% else %}<span>Local academic MVP · Deadline checks run when an administrator or CLI command invokes them.</span>{% endif %}
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+<div class="page-header {% if compact is defined and compact %}page-header-compact{% endif %}">
+  <div>
+    {% if eyebrow %}<p class="eyebrow">{{ eyebrow }}</p>{% endif %}
+    <h1 class="page-title">{{ title }}</h1>
+    {% if description %}<p class="page-description">{{ description }}</p>{% endif %}
+  </div>
+  {% if actions %}<div class="page-actions">{{ actions }}</div>{% endif %}
+</div>

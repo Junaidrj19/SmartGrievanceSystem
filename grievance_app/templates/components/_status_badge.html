@@ -1,0 +1,3 @@
+{% macro status_badge(status, label=None, class_name='') -%}
+  <span class="status-badge status-{{ status|lower }} {{ class_name }}"><span class="status-dot" aria-hidden="true"></span>{{ label or status_labels.get(status, status.replace('_', ' ').title()) }}</span>
+{%- endmacro %}

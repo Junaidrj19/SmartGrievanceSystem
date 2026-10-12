@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Staff workspace{% endblock %}
+{% block content %}
+{% from "components/_status_badge.html" import status_badge with context %}
+{% from "components/_icon.html" import icon %}
+{% from "components/_count.html" import count %}
+{% set scoped_total = case_counts.values()|sum %}
+{% set scoped_open = case_counts['SUBMITTED'] + case_counts['ASSIGNED'] + case_counts['IN_PROGRESS'] + case_counts['ESCALATED'] %}
+<section class="workspace-hero staff-hero" data-reveal>
+  <div class="row align-items-center g-3">
+    <div class="col-lg-8">
+      <div class="hero-kicker">{{ icon('inbox', 15) }} Resolve / Staff workspace</div>
+      <h1 class="hero-title">Assigned cases, clear next steps.</h1>
+      <p class="hero-copy">Work the queue within your authorized department scope. Every update becomes part of a transparent case timeline.</p>
+      <div class="lifecycle" aria-label="Staff workflow"><div class="lifecycle-step is-done"><span class="lifecycle-dot"></span><span>Assigned</span></div><div class="lifecycle-step is-done"><span class="lifecycle-dot"></span><span>Review</span></div><div class="lifecycle-step"><span class="lifecycle-dot"></span><span>Update</span></div><div class="lifecycle-step"><span class="lifecycle-dot"></span><span>Resolve</span></div></div>
+    </div>
+    <div class="col-lg-4 hero-meta"><span class="hero-chip">{{ icon('shield', 14) }} Department-scoped access</span>{{ count(scoped_open) }}<span>open cases in your scope</span></div>
+  </div>
+</section>
+<div class="row g-3 mb-4" aria-label="Staff case summary">
+  <div class="col-6 col-lg-3" data-reveal="1"><div class="metric-card"><span class="metric-label">Visible queue</span>{{ count(scoped_total) }}<span class="metric-detail">Assigned or departmental</span></div></div>
+  <div class="col-6 col-lg-3" data-reveal="2"><div class="metric-card"><span class="metric-label">In progress</span>{{ count(case_counts['IN_PROGRESS']) }}<span class="metric-detail">Currently being worked</span></div></div>
+  <div class="col-6 col-lg-3" data-reveal="3"><div class="metric-card metric-warning"><span class="metric-label">Escalated</span>{{ count(case_counts['ESCALATED']) }}<span class="metric-detail">Needs priority review</span></div></div>
+  <div class="col-6 col-lg-3" data-reveal="4"><div class="metric-card metric-success"><span class="metric-label">Resolved / closed</span>{{ count(case_counts['RESOLVED'] + case_counts['CLOSED']) }}<span class="metric-detail">Completed cases</span></div></div>
+</div>
+<section class="surface-card filter-card mb-4" aria-label="Filter assigned cases" data-reveal>
+  <div class="card-heading p-0 pb-3 mb-3"><div><div class="section-kicker">QUEUE CONTROLS</div><h2>Filter assigned cases</h2><p>Focus the queue without leaving your authorized scope.</p></div></div>
+  <form class="row align-items-end" method="get">
+    <div class="col-sm-6 col-lg-4"><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All statuses</option>{% for code, label in status_labels.items() %}<option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-sm-6 col-lg-4"><label class="form-label" for="overdue">Deadline</label><select class="form-select" id="overdue" name="overdue"><option value="">All cases</option><option value="1" {% if selected_overdue == '1' %}selected{% endif %}>Overdue only</option><option value="0" {% if selected_overdue == '0' %}selected{% endif %}>Not overdue</option></select></div>
+    <div class="col-sm-6 col-lg-2"><button class="btn btn-outline-primary w-100" type="submit">Apply filters</button></div>
+  </form>
+</section>
+<section class="surface-card table-card" data-reveal>
+  <div class="card-heading"><div><div class="section-kicker">AUTHORIZED QUEUE</div><h2>Case queue</h2><p>Only records within your authorized staff scope are shown.</p></div><span class="record-count">{{ grievances|length }} visible</span></div>
+  {% if grievances %}<div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Reference</th><th>Title</th><th>Department</th><th>Status</th><th>Deadline</th><th><span class="visually-hidden">Action</span></th></tr></thead><tbody>
+    {% for grievance in grievances %}<tr><td><a class="table-link" href="{{ url_for('staff.grievance_detail', grievance_id=grievance.id) }}">{{ grievance.reference_id }}</a></td><td class="title-cell">{{ grievance.title }}</td><td>{{ grievance.department.name if grievance.department else 'Unassigned' }}</td><td><div class="d-flex align-items-center gap-1">{{ status_badge(grievance.status) }}{% if grievance.is_overdue() %}<span class="overdue-badge">Overdue</span>{% endif %}</div></td><td>{{ format_datetime(grievance.deadline_at) }}</td><td class="table-action"><a class="btn btn-sm btn-ghost" href="{{ url_for('staff.grievance_detail', grievance_id=grievance.id) }}">Open case {{ icon('chevron', 14) }}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">{{ icon('check', 21) }}</span><h2>No cases match this view</h2><p>Assigned or departmental cases will appear here. Try clearing a filter if you expected to see a case.</p></div>{% endif %}
+</section>
+{% endblock %}

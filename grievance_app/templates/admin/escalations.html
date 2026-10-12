@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Escalation history{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+{% set title = "Escalation history" %}
+{% set eyebrow = "ADMINISTRATOR WORKSPACE" %}
+{% set description = "Review recorded deadline-based events. Each grievance can have one event per escalation level." %}
+{% include "components/_page_header.html" %}
+<section class="surface-card table-card" data-reveal>
+  <div class="card-heading"><div><div class="section-kicker">AUDIT HISTORY</div><h2>Recorded escalation events</h2><p>Resolved and closed cases are excluded from future checks.</p></div><span class="record-count">{{ events|length }} event{{ '' if events|length == 1 else 's' }}</span></div>
+  {% if events %}
+  <div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Time</th><th>Reference</th><th>Level</th><th>Reason</th><th>Destination</th><th>Action</th></tr></thead><tbody>
+  {% for event in events %}<tr><td>{{ format_datetime(event.created_at) }}</td><td><a class="table-link" href="{{ url_for('admin.grievance_detail', grievance_id=event.grievance.id) }}">{{ event.grievance.reference_id }}</a></td><td><span class="overdue-badge">Level {{ event.level }}</span></td><td class="wrap-cell">{{ event.reason }}</td><td>{{ event.destination_authority }}</td><td>{{ event.action_status.title() }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% else %}<div class="empty-state"><span class="empty-icon">{{ icon('check', 21) }}</span><h2>No escalation events</h2><p>Overdue unresolved cases will appear after the checker runs.</p></div>{% endif %}
+</section>
+{% endblock %}

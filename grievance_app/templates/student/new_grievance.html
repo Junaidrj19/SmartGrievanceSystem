@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}New grievance{% endblock %}
+{% block content %}
+{% set title = "Submit a new grievance" %}
+{% set eyebrow = "STUDENT WORKSPACE" %}
+{% set description = "Tell us what happened. A reference ID and response deadline will be generated after submission." %}
+{% include "components/_page_header.html" %}
+<section class="surface-card form-card">
+  <div class="card-heading"><div><h2>Grievance details</h2><p>Provide enough detail for the responsible department to review your case.</p></div></div>
+  <div class="card-body-pad">
+    <p class="required-note"><span class="required" aria-hidden="true">*</span> Required fields</p>
+    <form method="post" novalidate data-loading-form>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.title.label(class="form-label") }} <span class="required" aria-hidden="true">*</span>
+        {{ form.title(class="form-control", placeholder="Short summary of the issue") }}
+        {% for error in form.title.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.category.label(class="form-label") }} <span class="required" aria-hidden="true">*</span>
+        {{ form.category(class="form-control", list="category-options", placeholder="Choose or enter a category") }}
+        <datalist id="category-options">
+          <option value="Academic"></option>
+          <option value="Facilities"></option>
+          <option value="Finance"></option>
+          <option value="Library services"></option>
+          <option value="Student support"></option>
+        </datalist>
+        {% for error in form.category.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        {{ form.description.label(class="form-label") }} <span class="required" aria-hidden="true">*</span>
+        {{ form.description(class="form-control", placeholder="Describe the issue, when it occurred, and the resolution you are requesting.") }}
+        <div class="form-text">Please do not include passwords or other sensitive credentials.</div>
+        {% for error in form.description.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="mb-0">
+        {{ form.location.label(class="form-label") }}
+        {{ form.location(class="form-control", placeholder="Optional building, room, or online service") }}
+        {% for error in form.location.errors %}<div class="field-error">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="form-actions">
+        {{ form.submit(class="btn btn-primary") }}
+        <a class="btn btn-outline-secondary" href="{{ url_for('student.dashboard') }}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

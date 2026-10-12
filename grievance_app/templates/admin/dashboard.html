@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Operations overview{% endblock %}
+{% block content %}
+{% from "components/_status_badge.html" import status_badge with context %}
+{% from "components/_icon.html" import icon %}
+{% from "components/_count.html" import count %}
+{% set total_count = counts.total or 1 %}
+<section class="workspace-hero admin-hero" data-reveal>
+  <div class="row align-items-center g-3">
+    <div class="col-lg-8">
+      <div class="hero-kicker">{{ icon('layers', 15) }} Resolve / Operations center</div>
+      <h1 class="hero-title">Keep every case moving forward.</h1>
+      <p class="hero-copy">A calm view of the whole grievance system: ownership, service deadlines, workflow health, and escalation signals in one place.</p>
+      <div class="lifecycle" aria-label="Administrative workflow"><div class="lifecycle-step is-done"><span class="lifecycle-dot"></span><span>Intake</span></div><div class="lifecycle-step is-done"><span class="lifecycle-dot"></span><span>Assign</span></div><div class="lifecycle-step is-done"><span class="lifecycle-dot"></span><span>Monitor</span></div><div class="lifecycle-step"><span class="lifecycle-dot"></span><span>Resolve</span></div></div>
+    </div>
+    <div class="col-lg-4 hero-meta"><span class="hero-chip">{{ icon('shield', 14) }} Administrative controls active</span>{{ count(counts.total) }}<span>total cases in the system</span></div>
+  </div>
+</section>
+
+<div class="metrics-grid mb-4" aria-label="System summary">
+  <div class="metric-card" data-reveal="1"><span class="metric-label">Total cases</span>{{ count(counts.total) }}<span class="metric-detail">All records</span></div>
+  <div class="metric-card" data-reveal="2"><span class="metric-label">Open cases</span>{{ count(counts.open) }}<span class="metric-detail">Active workflow</span></div>
+  <div class="metric-card metric-success" data-reveal="3"><span class="metric-label">Resolved / closed</span>{{ count(counts.resolved) }}<span class="metric-detail">Completed cases</span></div>
+  <div class="metric-card metric-warning" data-reveal="4"><span class="metric-label">Overdue open</span>{{ count(counts.overdue) }}<span class="metric-detail">Past deadline</span></div>
+  <div class="metric-card metric-danger" data-reveal="4"><span class="metric-label">Escalated</span>{{ count(counts.escalated) }}<span class="metric-detail">Priority attention</span></div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-lg-7" data-reveal>
+    <section class="surface-card status-distribution h-100">
+      <div class="card-heading"><div><div class="section-kicker">WORKFLOW HEALTH</div><h2>Status distribution</h2><p>Live distribution of all grievances in the database.</p></div><span class="distribution-total">{{ counts.total }} total</span></div>
+      <div class="card-body-pad">
+        {% for code, label in status_labels.items() %}
+        {% set amount = status_counts.get(code, 0) %}
+        <div class="distribution-row">
+          <div class="distribution-label"><span class="status-mini-dot status-{{ code|lower }}"></span><span>{{ label }}</span><strong>{{ amount }}</strong></div>
+          <div class="distribution-track"><span class="distribution-bar bar-{{ code|lower }}" style="width: {{ ((amount / total_count) * 100)|round(0) }}%"></span></div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+  <div class="col-lg-5" data-reveal="2">
+    <section class="surface-card checker-card h-100">
+      <div class="card-body-pad">
+        <div class="checker-icon">{{ icon('spark', 20) }}</div>
+        <div class="section-kicker">AUTOMATION</div>
+        <h2>Deadline checker</h2>
+        <p>Run the transparent escalation policy against unresolved cases that have passed their response deadline.</p>
+        <form method="post" action="{{ url_for('admin.check_escalations') }}" data-loading-form data-loading-label="Checking…" onsubmit="return window.confirm('Run the overdue grievance checker now?');">
+          {{ escalation_form.hidden_tag() }}
+          {{ escalation_form.submit(class="btn btn-primary") }}
+          <a class="subtle-link" href="{{ url_for('admin.escalations') }}">Review history {{ icon('arrow-up-right', 14) }}</a>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<section class="surface-card filter-card mb-4" aria-label="Filter all grievances" data-reveal>
+  <div class="card-heading p-0 pb-3 mb-3"><div><div class="section-kicker">QUEUE CONTROLS</div><h2>Filter cases</h2><p>Use one or more filters to narrow the administrative queue.</p></div></div>
+  <form class="row align-items-end" method="get">
+    <div class="col-sm-12 col-lg-4"><label class="form-label" for="q">Search cases</label><div class="input-with-icon">{{ icon('search', 16) }}<input class="form-control" id="q" name="q" type="search" value="{{ selected_search }}" placeholder="Reference, title, category, or description"></div></div>
+    <div class="col-sm-6 col-lg-2"><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All statuses</option>{% for code, label in status_labels.items() %}<option value="{{ code }}" {% if selected_status == code %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div class="col-sm-6 col-lg-3"><label class="form-label" for="category">Category</label><select class="form-select" id="category" name="category"><option value="">All categories</option>{% for category in categories %}<option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>{% endfor %}</select></div>
+    <div class="col-sm-6 col-lg-3"><label class="form-label" for="department">Department</label><select class="form-select" id="department" name="department"><option value="">All departments</option>{% for department in departments %}<option value="{{ department.id }}" {% if selected_department == department.id %}selected{% endif %}>{{ department.name }}</option>{% endfor %}</select></div>
+    <div class="col-sm-6 col-lg-2"><label class="form-label" for="overdue">Deadline</label><select class="form-select" id="overdue" name="overdue"><option value="">All cases</option><option value="1" {% if selected_overdue == '1' %}selected{% endif %}>Overdue only</option><option value="0" {% if selected_overdue == '0' %}selected{% endif %}>Not overdue</option></select></div>
+    <div class="col-sm-6 col-lg-2"><button class="btn btn-outline-primary w-100" type="submit">Apply filters</button></div>
+  </form>
+</section>
+
+<section class="surface-card table-card" data-reveal>
+  <div class="card-heading"><div><div class="section-kicker">ALL GRIEVANCES</div><h2>Operations queue</h2><p>Open a case to review its history, assignment, and permitted actions.</p></div><span class="record-count">{{ grievances|length }} visible</span></div>
+  {% if grievances %}<div class="table-responsive"><table class="table table-hover align-middle"><thead><tr><th>Reference</th><th>Title</th><th>Student</th><th>Category</th><th>Department</th><th>Status</th><th>Deadline</th><th><span class="visually-hidden">Action</span></th></tr></thead><tbody>
+    {% for grievance in grievances %}<tr><td><a class="table-link" href="{{ url_for('admin.grievance_detail', grievance_id=grievance.id) }}">{{ grievance.reference_id }}</a></td><td class="title-cell">{{ grievance.title }}</td><td>{{ grievance.student.name }}</td><td>{{ grievance.category }}</td><td>{{ grievance.department.name if grievance.department else 'Unassigned' }}</td><td><div class="d-flex align-items-center gap-1">{{ status_badge(grievance.status) }}{% if grievance.is_overdue() %}<span class="overdue-badge">Overdue</span>{% endif %}</div></td><td>{{ format_datetime(grievance.deadline_at) }}</td><td class="table-action"><a class="btn btn-sm btn-ghost" href="{{ url_for('admin.grievance_detail', grievance_id=grievance.id) }}">Open {{ icon('chevron', 14) }}</a></td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<div class="empty-state"><span class="empty-icon">{{ icon('search', 21) }}</span><h2>No cases match these filters</h2><p>Try clearing a filter to see all grievances.</p></div>{% endif %}
+</section>
+<div class="d-flex justify-content-end mt-3"><a class="subtle-link" href="{{ url_for('admin.escalations') }}">View complete escalation history {{ icon('arrow-up-right', 14) }}</a></div>
+{% endblock %}
