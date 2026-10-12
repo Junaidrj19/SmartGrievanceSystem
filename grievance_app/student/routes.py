@@ -10,6 +10,7 @@ from ..forms import GrievanceForm
 from ..models import Grievance
 from ..services.exceptions import DomainError
 from ..services.grievance_service import create_grievance
+from ..services.reporting_service import queue_summary, visible_grievances
 from . import student_bp
 
 
@@ -21,7 +22,11 @@ def dashboard():
         .order_by(Grievance.updated_at.desc(), Grievance.id.desc())
         .all()
     )
-    return render_template("student/dashboard.html", grievances=grievances)
+    return render_template(
+        "student/dashboard.html",
+        grievances=grievances,
+        summary=queue_summary(visible_grievances(current_user)),
+    )
 
 
 @student_bp.route("/grievances/new", methods=["GET", "POST"])

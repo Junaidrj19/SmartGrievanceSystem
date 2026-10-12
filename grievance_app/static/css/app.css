@@ -259,6 +259,13 @@ html.has-js .donut .donut-arc {
 }
 .donut-center-label { fill: var(--muted); font-size: .52rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
 
+.donut .arc-submitted   { stroke: #5b94d6; }
+.donut .arc-assigned    { stroke: var(--brand-600); }
+.donut .arc-in_progress { stroke: #d9a23a; }
+.donut .arc-escalated   { stroke: var(--danger); }
+.donut .arc-resolved    { stroke: var(--success); }
+.donut .arc-closed      { stroke: #8795a6; }
+
 .distribution-total { color: var(--muted); font-size: var(--text-xs); white-space: nowrap; }
 .distribution-row + .distribution-row { margin-top: .95rem; }
 .distribution-label { align-items: center; display: flex; font-size: var(--text-sm); gap: .5rem; }

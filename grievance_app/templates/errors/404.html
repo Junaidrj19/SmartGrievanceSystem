@@ -1,1 +1,11 @@
-{% extends "base.html" %}{% block title %}Not found{% endblock %}{% block content %}<div class="surface-card empty-state"><span class="empty-icon" aria-hidden="true">?</span><h1 class="page-title">Record not found</h1><p>The requested grievance or page does not exist.</p><a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a></div>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Not found{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+<div class="surface-card empty-state" data-reveal>
+  <span class="empty-icon">{{ icon('search', 22) }}</span>
+  <h1 class="page-title">Record not found</h1>
+  <p>This record does not exist, or it is outside the cases you are authorized to view.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a>
+</div>
+{% endblock %}

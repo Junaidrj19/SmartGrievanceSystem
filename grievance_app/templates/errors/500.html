@@ -1,1 +1,11 @@
-{% extends "base.html" %}{% block title %}Something went wrong{% endblock %}{% block content %}<div class="surface-card empty-state"><span class="empty-icon" aria-hidden="true">!</span><h1 class="page-title">Something went wrong</h1><p>The portal could not complete that request. Please try again.</p><a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a></div>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Something went wrong{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+<div class="surface-card empty-state" data-reveal>
+  <span class="empty-icon">{{ icon('alert', 22) }}</span>
+  <h1 class="page-title">Something went wrong</h1>
+  <p>An unexpected error occurred and the pending change was rolled back. No partial update was saved.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a>
+</div>
+{% endblock %}

@@ -1,1 +1,11 @@
-{% extends "base.html" %}{% block title %}Request not accepted{% endblock %}{% block content %}<div class="surface-card empty-state"><span class="empty-icon" aria-hidden="true">!</span><h1 class="page-title">Request not accepted</h1><p>The request was missing valid information or could not be verified.</p><a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a></div>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Request not accepted{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+<div class="surface-card empty-state" data-reveal>
+  <span class="empty-icon">{{ icon('alert', 22) }}</span>
+  <h1 class="page-title">Request not accepted</h1>
+  <p>The submission could not be processed. This usually means a form expired or was missing required information. Please reload the page and try again.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.index') }}">Return to portal</a>
+</div>
+{% endblock %}

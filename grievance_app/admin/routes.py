@@ -19,6 +19,7 @@ from ..services.grievance_service import (
 from ..services.reporting_service import (
     dashboard_counts,
     department_choices,
+    department_counts,
     filter_grievances,
     staff_for_department,
     status_counts,
@@ -86,6 +87,7 @@ def dashboard():
         grievances=grievances,
         counts=dashboard_counts(),
         status_counts=status_counts(),
+        department_counts=department_counts(),
         departments=department_choices(),
         categories=[row[0] for row in db.session.query(Grievance.category).distinct().order_by(Grievance.category)],
         escalation_form=escalation_form,

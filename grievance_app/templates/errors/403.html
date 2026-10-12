@@ -1,1 +1,11 @@
-{% extends "base.html" %}{% block title %}Access denied{% endblock %}{% block content %}<div class="surface-card empty-state"><span class="empty-icon" aria-hidden="true">!</span><h1 class="page-title">Access denied</h1><p>You do not have permission to view or change this resource.</p><a class="btn btn-primary" href="{{ url_for('main.dashboard') if current_user.is_authenticated else url_for('auth.login') }}">Return to portal</a></div>{% endblock %}
+{% extends "base.html" %}
+{% block title %}Access denied{% endblock %}
+{% block content %}
+{% from "components/_icon.html" import icon %}
+<div class="surface-card empty-state" data-reveal>
+  <span class="empty-icon">{{ icon('lock', 22) }}</span>
+  <h1 class="page-title">Access denied</h1>
+  <p>You do not have permission to view or change this resource. Permissions are enforced on the server for every request.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.dashboard') if current_user.is_authenticated else url_for('auth.login') }}">Return to portal</a>
+</div>
+{% endblock %}

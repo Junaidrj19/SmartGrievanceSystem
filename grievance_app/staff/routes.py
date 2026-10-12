@@ -10,7 +10,12 @@ from ..forms import StatusUpdateForm
 from ..models import Grievance
 from ..services.exceptions import DomainError
 from ..services.grievance_service import allowed_next_statuses, update_status
-from ..services.reporting_service import filter_grievances, status_counts, visible_grievances
+from ..services.reporting_service import (
+    filter_grievances,
+    queue_summary,
+    status_counts,
+    visible_grievances,
+)
 from ..utils import STATUS_LABELS
 from . import staff_bp
 
@@ -48,6 +53,7 @@ def dashboard():
         "staff/dashboard.html",
         grievances=grievances,
         case_counts=status_counts(visible_grievances(current_user)),
+        summary=queue_summary(visible_grievances(current_user)),
         selected_status=status or "",
         selected_overdue=overdue_value or "",
     )

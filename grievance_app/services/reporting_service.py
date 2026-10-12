@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import false, func, or_
+from sqlalchemy import and_, case, false, func, or_
 
-from ..extensions import db
 from ..models import Department, Grievance, User
 from ..utils import utcnow
 
@@ -68,37 +67,57 @@ def filter_grievances(
     return query.order_by(Grievance.updated_at.desc(), Grievance.id.desc())
 
 
-def dashboard_counts(*, at: datetime | None = None) -> dict[str, int]:
+def queue_summary(query=None, *, at: datetime | None = None) -> dict[str, int]:
+    """Return real headline counts for any visibility-scoped query.
+
+    Shared by the student, staff and administrator dashboards so the numbers
+    are computed once in SQL rather than re-derived in a template.
+    """
+
     at = at or utcnow()
-    total = db.session.query(func.count(Grievance.id)).scalar() or 0
-    resolved = (
-        db.session.query(func.count(Grievance.id))
-        .filter(Grievance.status.in_(["RESOLVED", "CLOSED"]))
-        .scalar()
-        or 0
-    )
-    overdue = (
-        db.session.query(func.count(Grievance.id))
-        .filter(
-            Grievance.deadline_at < at,
-            Grievance.status.notin_(["RESOLVED", "CLOSED"]),
-        )
-        .scalar()
-        or 0
-    )
-    escalated = (
-        db.session.query(func.count(Grievance.id))
-        .filter(Grievance.status == "ESCALATED")
-        .scalar()
-        or 0
-    )
+    query = query if query is not None else Grievance.query
+    closed_states = ["RESOLVED", "CLOSED"]
+
+    total, resolved, overdue, escalated = query.with_entities(
+        func.count(Grievance.id),
+        func.coalesce(
+            func.sum(case((Grievance.status.in_(closed_states), 1), else_=0)), 0
+        ),
+        func.coalesce(
+            func.sum(
+                case(
+                    (
+                        and_(
+                            Grievance.deadline_at < at,
+                            Grievance.status.notin_(closed_states),
+                        ),
+                        1,
+                    ),
+                    else_=0,
+                )
+            ),
+            0,
+        ),
+        func.coalesce(
+            func.sum(case((Grievance.status == "ESCALATED", 1), else_=0)), 0
+        ),
+    ).one()
+
+    total = int(total or 0)
+    resolved = int(resolved or 0)
     return {
-        "total": int(total),
-        "open": int(total - resolved),
-        "resolved": int(resolved),
-        "overdue": int(overdue),
-        "escalated": int(escalated),
+        "total": total,
+        "open": total - resolved,
+        "resolved": resolved,
+        "overdue": int(overdue or 0),
+        "escalated": int(escalated or 0),
     }
+
+
+def dashboard_counts(*, at: datetime | None = None) -> dict[str, int]:
+    """Account-wide counts for the administrator dashboard."""
+
+    return queue_summary(Grievance.query, at=at)
 
 
 def status_counts(query=None) -> dict[str, int]:
@@ -111,6 +130,27 @@ def status_counts(query=None) -> dict[str, int]:
     counts = {status: 0 for status in STATUS_ORDER}
     counts.update({status: int(total) for status, total in rows})
     return counts
+
+
+def department_counts(query=None) -> list[tuple[str, int]]:
+    """Return real case volume per department, busiest first.
+
+    Unassigned cases are grouped under a single explicit label.
+    """
+
+    query = query or Grievance.query
+    rows = (
+        query.outerjoin(Department, Grievance.department_id == Department.id)
+        .with_entities(Department.name, func.count(Grievance.id))
+        .group_by(Department.name)
+        .all()
+    )
+    counts = [
+        (name or "Unassigned", int(total))
+        for name, total in rows
+        if total
+    ]
+    return sorted(counts, key=lambda row: (-row[1], row[0]))
 
 
 def department_choices() -> list[Department]:

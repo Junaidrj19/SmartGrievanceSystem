@@ -4,12 +4,6 @@
 {% from "components/_status_badge.html" import status_badge with context %}
 {% from "components/_icon.html" import icon %}
 {% from "components/_count.html" import count %}
-{% set totals = namespace(active=0, resolved=0, overdue=0) %}
-{% for grievance in grievances %}
-  {% if grievance.is_open %}{% set totals.active = totals.active + 1 %}{% endif %}
-  {% if grievance.status in ['RESOLVED', 'CLOSED'] %}{% set totals.resolved = totals.resolved + 1 %}{% endif %}
-  {% if grievance.is_overdue() %}{% set totals.overdue = totals.overdue + 1 %}{% endif %}
-{% endfor %}
 
 <section class="workspace-hero student-hero" data-reveal>
   <div class="row align-items-center g-3">
@@ -26,7 +20,7 @@
     </div>
     <div class="col-lg-4 hero-meta">
       <span class="hero-chip">{{ icon('clock', 14) }} Response deadlines stay visible</span>
-      {{ count(grievances|length) }}
+      {{ count(summary.total) }}
       <span>total submissions on your account</span>
       <a class="btn btn-light" href="{{ url_for('student.new_grievance') }}">{{ icon('plus', 15) }} Submit a grievance</a>
     </div>
@@ -34,14 +28,29 @@
 </section>
 
 <div class="row g-3 mb-4" aria-label="Your grievance summary">
-  <div class="col-6 col-lg-3" data-reveal="1"><div class="metric-card"><span class="metric-label">Total submissions</span>{{ count(grievances|length) }}<span class="metric-detail">All time</span></div></div>
-  <div class="col-6 col-lg-3" data-reveal="2"><div class="metric-card"><span class="metric-label">Open cases</span>{{ count(totals.active) }}<span class="metric-detail">Need attention</span></div></div>
-  <div class="col-6 col-lg-3" data-reveal="3"><div class="metric-card metric-success"><span class="metric-label">Resolved / closed</span>{{ count(totals.resolved) }}<span class="metric-detail">Completed cases</span></div></div>
-  <div class="col-6 col-lg-3" data-reveal="4"><div class="metric-card metric-warning"><span class="metric-label">Overdue open</span>{{ count(totals.overdue) }}<span class="metric-detail">Past response deadline</span></div></div>
+  <div class="col-6 col-lg-3" data-reveal="1">
+    <div class="metric-card"><span class="metric-label">Total submissions</span>{{ count(summary.total) }}<span class="metric-detail">All time</span></div>
+  </div>
+  <div class="col-6 col-lg-3" data-reveal="2">
+    <div class="metric-card"><span class="metric-label">Open cases</span>{{ count(summary.open) }}<span class="metric-detail">Still in progress</span></div>
+  </div>
+  <div class="col-6 col-lg-3" data-reveal="3">
+    <div class="metric-card metric-success"><span class="metric-label">Resolved / closed</span>{{ count(summary.resolved) }}<span class="metric-detail">Completed cases</span></div>
+  </div>
+  <div class="col-6 col-lg-3" data-reveal="4">
+    <div class="metric-card metric-warning"><span class="metric-label">Overdue open</span>{{ count(summary.overdue) }}<span class="metric-detail">Past response deadline</span></div>
+  </div>
 </div>
 
 <section class="surface-card table-card" data-reveal>
-  <div class="card-heading"><div><div class="section-kicker">CASE ACTIVITY</div><h2>Your submitted grievances</h2><p>Open a case to view its deadline and complete status history.</p></div><a class="subtle-link" href="{{ url_for('student.new_grievance') }}">New grievance {{ icon('arrow-up-right', 14) }}</a></div>
+  <div class="card-heading">
+    <div>
+      <div class="section-kicker">CASE ACTIVITY</div>
+      <h2>Your submitted grievances</h2>
+      <p>Open a case to view its deadline and complete status history.</p>
+    </div>
+    <a class="subtle-link" href="{{ url_for('student.new_grievance') }}">New grievance {{ icon('arrow-up-right', 14) }}</a>
+  </div>
   {% if grievances %}
   <div class="table-responsive"><table class="table table-hover align-middle">
     <caption class="visually-hidden">Your grievances</caption>
@@ -52,7 +61,10 @@
         <td><a class="table-link" href="{{ url_for('student.grievance_detail', grievance_id=grievance.id) }}">{{ grievance.reference_id }}</a></td>
         <td class="title-cell">{{ grievance.title }}</td>
         <td>{{ grievance.category }}</td>
-        <td>{{ status_badge(grievance.status) }}</td>
+        <td>
+          {{ status_badge(grievance.status) }}
+          {% if grievance.is_overdue() %}<span class="overdue-badge">Overdue</span>{% endif %}
+        </td>
         <td>{{ format_datetime(grievance.created_at) }}</td>
         <td>{{ format_datetime(grievance.updated_at) }}</td>
         <td class="table-action"><a class="btn btn-sm btn-ghost" href="{{ url_for('student.grievance_detail', grievance_id=grievance.id) }}">View {{ icon('chevron', 14) }}</a></td>
@@ -61,7 +73,12 @@
     </tbody>
   </table></div>
   {% else %}
-  <div class="empty-state"><span class="empty-icon">{{ icon('plus', 21) }}</span><h2>No grievances yet</h2><p>Your submitted cases will appear here with a reference ID, deadline, and timeline.</p><a class="btn btn-primary" href="{{ url_for('student.new_grievance') }}">Submit your first grievance</a></div>
+  <div class="empty-state">
+    <span class="empty-icon">{{ icon('plus', 21) }}</span>
+    <h2>No grievances yet</h2>
+    <p>Your submitted cases will appear here with a reference ID, deadline, and complete timeline.</p>
+    <a class="btn btn-primary" href="{{ url_for('student.new_grievance') }}">Submit your first grievance</a>
+  </div>
   {% endif %}
 </section>
 {% endblock %}
