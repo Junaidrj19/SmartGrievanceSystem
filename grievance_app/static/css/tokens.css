@@ -1,0 +1,127 @@
+/* ==========================================================================
+   Resolve — design tokens
+   Single source of truth for colour, type, space, radius, shadow and motion.
+   Self-hosted variable fonts keep the portal fully functional offline.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Inter var";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("../fonts/inter-var.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Jakarta var";
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url("../fonts/jakarta-var.woff2") format("woff2");
+}
+
+:root {
+  /* --- Brand: midnight navy base with an indigo-blue primary ------------- */
+  --navy-900: #081225;
+  --navy-800: #0b1a30;
+  --navy-700: #112a4d;
+  --navy-600: #17365f;
+
+  --brand-800: #1b3a9b;
+  --brand-700: #1e40af;
+  --brand-600: #2563eb;
+  --brand-500: #3b82f6;
+  --brand-200: #bfd5fe;
+  --brand-100: #dbe7fe;
+  --brand-050: #eff4ff;
+
+  --indigo-600: #4f46e5;
+  --indigo-500: #6366f1;
+
+  --cyan-400: #22d3ee;
+  --cyan-300: #67e8f9;
+
+  /* --- Neutrals ---------------------------------------------------------- */
+  --surface: #ffffff;
+  --surface-2: #f6f8fc;
+  --surface-3: #eef2f9;
+  --surface-sunken: #f9fbfd;
+
+  --ink: #0f1b2d;
+  --ink-2: #334155;
+  --muted: #64748b;
+  --subtle: #94a3b8;
+  --faint: #c2cddb;
+
+  --line: #e3e9f2;
+  --line-strong: #cbd5e1;
+
+  /* --- Status (text must never rely on colour alone) -------------------- */
+  --danger: #be2f2f;
+  --danger-ink: #a12525;
+  --danger-soft: #fef1f1;
+  --danger-line: #f3cdcd;
+
+  --warning: #b2740f;
+  --warning-ink: #8a5a0d;
+  --warning-soft: #fff8ea;
+  --warning-line: #f0ddb4;
+
+  --success: #11784a;
+  --success-ink: #0f6b43;
+  --success-soft: #ecf8f1;
+  --success-line: #bce3cd;
+
+  --info-soft: #eef5fd;
+  --info-line: #cfe2f7;
+
+  /* --- Accent tints used by landing icon tiles and feature rules --------- */
+  --tint-blue-bg: #eaf3ff;    --tint-blue-line: #d2e5fb;  --tint-blue-ink: #1d6fd0;
+  --tint-green-bg: #e9f8f0;   --tint-green-line: #c8ebd8; --tint-green-ink: #12805a;
+  --tint-violet-bg: #f1eeff;  --tint-violet-line: #ded6fb; --tint-violet-ink: #6d4fd0;
+  --tint-amber-bg: #fff6e4;   --tint-amber-line: #f3e0b6; --tint-amber-ink: #ac7312;
+  --tint-rose-bg: #fff0f3;    --tint-rose-line: #f7d6dd;  --tint-rose-ink: #c44a62;
+  --tint-teal-bg: #e6f9f7;    --tint-teal-line: #c6eeea;  --tint-teal-ink: #0f8781;
+
+  /* --- Typography -------------------------------------------------------- */
+  --font-ui: "Inter var", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Jakarta var", "Inter var", ui-sans-serif, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --text-xs: .72rem;
+  --text-sm: .8rem;
+  --text-base: .875rem;
+  --text-md: .95rem;
+  --text-lg: 1.05rem;
+
+  --display-hero: clamp(2.75rem, 6vw, 4.5rem);
+  --display-section: clamp(1.9rem, 3.6vw, 2.9rem);
+  --display-panel: clamp(1.75rem, 3vw, 2.5rem);
+
+  --tracking-tight: -.028em;
+  --tracking-display: -.035em;
+  --tracking-eyebrow: .14em;
+
+  /* --- Space / shape ----------------------------------------------------- */
+  --container: 1200px;
+  --container-pad: 2rem;
+  --section-y: 7rem;
+
+  --radius-sm: 8px;
+  --radius-control: 9px;
+  --radius-card: 14px;
+  --radius-panel: 20px;
+  --radius-pill: 999px;
+
+  --shadow-xs: 0 1px 2px rgba(15, 27, 45, .05);
+  --shadow-card: 0 6px 24px rgba(17, 42, 77, .055);
+  --shadow-raised: 0 16px 36px rgba(21, 62, 112, .11);
+  --shadow-float: 0 22px 60px rgba(12, 36, 72, .16);
+  --shadow-nav: 0 4px 20px rgba(16, 38, 68, .07);
+
+  /* --- Motion ------------------------------------------------------------ */
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  --ease-in-out: cubic-bezier(.4, 0, .2, 1);
+  --dur-fast: .18s;
+  --dur: .26s;
+  --dur-slow: .55s;
+}

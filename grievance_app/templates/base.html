@@ -3,17 +3,22 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0b1425">
+    <meta name="theme-color" content="#081225">
     <meta name="description" content="Resolve — smart grievance management for clear, accountable case resolution.">
     <title>{% block title %}Resolve{% endblock %} · Resolve</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preload" href="{{ url_for('static', filename='fonts/inter-var.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ url_for('static', filename='fonts/jakarta-var.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link href="{{ url_for('static', filename='css/tokens.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/shell.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/landing.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
   </head>
   <body class="portal-body {% if landing_page is defined and landing_page %}landing-body{% endif %}">
     {% from "components/_icon.html" import icon %}
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="portal-header {% if landing_page is defined and landing_page %}landing-header{% endif %}">
-      <nav class="navbar navbar-expand-lg navbar-dark" aria-label="Primary navigation">
+      <nav class="navbar navbar-expand-lg" aria-label="Primary navigation">
         <div class="container-xl">
           <a class="navbar-brand portal-brand" href="{{ url_for('main.landing') if current_user.is_authenticated else url_for('main.index') }}">
             <span class="brand-mark" aria-hidden="true">R</span>
@@ -27,14 +32,15 @@
               <ul class="navbar-nav mx-auto portal-links landing-links">
                 <li class="nav-item"><a class="nav-link active" data-section-link="hero" href="#hero">Home</a></li>
                 <li class="nav-item"><a class="nav-link" data-section-link="features" href="#features">Features</a></li>
-                <li class="nav-item"><a class="nav-link" data-section-link="how-it-works" href="#how-it-works">How it works</a></li>
-                <li class="nav-item"><a class="nav-link" href="{{ track_url }}">Track grievance</a></li>
+                <li class="nav-item"><a class="nav-link" data-section-link="how-it-works" href="#how-it-works">How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ raise_url }}">Raise a Grievance</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ track_url }}">Track Grievance</a></li>
               </ul>
               <div class="landing-nav-actions">
                 {% if current_user.is_authenticated %}
                   <a class="nav-login" href="{{ url_for('main.dashboard') }}">Dashboard</a>
                   <span class="landing-user">{{ current_user.name }}<small>{{ role_labels.get(current_user.role, current_user.role) }}</small></span>
-                  <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">{{ logout_form.hidden_tag() }}<button type="submit" class="btn btn-outline-primary">Sign out</button></form>
+                  <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">{{ logout_form.hidden_tag() }}<button type="submit" class="btn btn-outline-primary btn-sm">Sign out</button></form>
                 {% else %}
                   <a class="nav-login" href="{{ url_for('auth.login') }}">Sign in</a>
                 {% endif %}
@@ -47,7 +53,6 @@
             </button>
             <div class="collapse navbar-collapse" id="portalNav">
               <ul class="navbar-nav me-auto portal-links">
-                {% from "components/_icon.html" import icon %}
                 {% if current_user.role == 'student' %}
                   <li class="nav-item"><a class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}" href="{{ url_for('student.dashboard') }}">{{ icon('grid', 15) }}<span>My grievances</span></a></li>
                   <li class="nav-item"><a class="nav-link {% if request.endpoint == 'student.new_grievance' %}active{% endif %}" href="{{ url_for('student.new_grievance') }}">{{ icon('plus', 15) }}<span>New grievance</span></a></li>
@@ -57,6 +62,7 @@
                   <li class="nav-item"><a class="nav-link {% if request.endpoint in ['admin.dashboard', 'admin.grievance_detail', 'admin.assign', 'admin.update_grievance_status'] %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">{{ icon('grid', 15) }}<span>Operations</span></a></li>
                   <li class="nav-item"><a class="nav-link {% if request.endpoint == 'admin.escalations' %}active{% endif %}" href="{{ url_for('admin.escalations') }}">{{ icon('alert', 15) }}<span>Escalations</span></a></li>
                 {% endif %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('main.landing') }}">{{ icon('spark', 15) }}<span>About Resolve</span></a></li>
               </ul>
               <div class="portal-account">
                 <div class="account-avatar" aria-hidden="true">{{ current_user.name[:1]|upper }}</div>
@@ -80,13 +86,39 @@
       {% block content %}{% endblock %}
     </main>
 
-    <footer class="portal-footer {% if landing_page is defined and landing_page %}landing-footer{% else %}container-xl{% endif %}">
-      <div><strong>Resolve</strong> · Smart grievance management{% if landing_page is defined and landing_page %}<p class="footer-description">Structured concerns. Clear ownership. A visible path to resolution.</p><small>© {{ current_year }} Resolve · Local academic demonstration</small>{% endif %}</div>
-      {% if landing_page is defined and landing_page %}
-        <nav class="landing-footer-links" aria-label="Footer navigation"><a href="#hero">Home</a><a href="#features">Features</a><a href="#how-it-works">How it works</a><a href="{{ raise_url }}">{{ raise_label }}</a><a href="{{ track_url }}">Track grievance</a></nav>
-      {% else %}<span>Local academic MVP · Deadline checks run when an administrator or CLI command invokes them.</span>{% endif %}
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% if landing_page is defined and landing_page %}
+      <footer class="portal-footer landing-footer">
+        <div class="footer-brand">
+          <strong>Resolve</strong>
+          <p class="footer-description">Structured concerns, clear ownership, and a visible path to resolution — built as a local academic demonstration of transparent grievance handling.</p>
+          <small>© {{ current_year }} Resolve · Local academic demonstration</small>
+        </div>
+        <div class="footer-col">
+          <h2>Explore</h2>
+          <nav class="landing-footer-links" aria-label="Footer navigation">
+            <a href="#hero">Home</a>
+            <a href="#problem">The Problem</a>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="{{ raise_url }}">{{ raise_label }}</a>
+            <a href="{{ track_url }}">Track Grievance</a>
+          </nav>
+        </div>
+        <div class="footer-col">
+          <h2>About this build</h2>
+          <div class="footer-meta">
+            <span>{{ icon('shield', 15) }}Role-based access is enforced on the server for every request.</span>
+            <span>{{ icon('refresh', 15) }}Escalation checks run only when an administrator or the CLI command invokes them.</span>
+            <span>{{ icon('users', 15) }}All seeded accounts and cases are fictional demonstration data.</span>
+          </div>
+        </div>
+      </footer>
+    {% else %}
+      <footer class="portal-footer container-xl">
+        <div><strong>Resolve</strong> · Smart grievance management</div>
+        <span>Local academic MVP · Deadline checks run when an administrator or CLI command invokes them.</span>
+      </footer>
+    {% endif %}
     <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
   </body>
 </html>
