@@ -500,6 +500,9 @@
   z-index: 0;
 }
 .impact-panel > * { position: relative; z-index: 1; }
+/* Keep the decorative orb out of the grid flow: the rule above would
+   otherwise promote it to a relative grid item and shift the columns. */
+.impact-panel > .impact-orb { position: absolute; z-index: 0; }
 .impact-panel h2 {
   color: #fff;
   font-size: var(--display-panel);

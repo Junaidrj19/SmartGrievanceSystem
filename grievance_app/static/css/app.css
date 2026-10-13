@@ -153,11 +153,13 @@
   align-items: flex-start;
   border-bottom: 1px solid var(--line);
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
   justify-content: space-between;
   padding: 1.3rem 1.45rem;
 }
+/* Let the copy wrap before the trailing icon drops to its own line. */
+.card-heading > div:first-child { min-width: 0; }
 .card-heading h2, .card-heading h3 { font-size: var(--text-lg); font-weight: 700; }
 .card-heading p { color: var(--muted); font-size: var(--text-sm); margin-top: .3rem; }
 .card-body-pad { padding: 1.45rem; }
@@ -243,7 +245,9 @@
 .chart-layout { align-items: center; display: grid; gap: 2rem; grid-template-columns: 196px 1fr; }
 
 .donut { display: block; height: 196px; width: 196px; }
-.donut circle { fill: none; stroke-linecap: butt; stroke-width: 15; transform-origin: center; }
+/* No transform-origin here: the arcs carry an explicit rotate(-90 70 70)
+   attribute, and a CSS origin would be applied on top of it and displace them. */
+.donut circle { fill: none; stroke-linecap: butt; stroke-width: 15; }
 .donut .donut-track { stroke: var(--surface-3); }
 html.has-js .donut .donut-arc {
   animation: donut-sweep 1.1s var(--ease-out) both;
@@ -540,6 +544,7 @@ html.has-js .table tbody tr {
   .portal-main { padding-top: 1.6rem; }
   .page-title { font-size: 1.5rem; }
   .card-heading, .card-body-pad { padding: 1.1rem; }
+  .card-heading { flex-wrap: wrap; }
   .login-card { padding: 1.6rem; }
   .brand-lockup small { display: none; }
   .workspace-hero { padding: 1.3rem; }

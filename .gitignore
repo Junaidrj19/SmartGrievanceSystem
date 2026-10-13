@@ -10,3 +10,7 @@ htmlcov/
 instance/*.db
 instance/*.sqlite
 instance/*.sqlite3
+
+# Design input material, kept locally and not distributed with the project:
+# the supplied screen recording and the frames extracted from it.
+references/
